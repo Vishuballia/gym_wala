@@ -6,16 +6,16 @@
 <title>Bhojpuri Gym Beats</title>
 <style>
 *{box-sizing:border-box}
+html,body{height:100%}
 body{
-  margin:0;background:#050505;color:#fff;font-family:Arial,Helvetica,sans-serif;
-  min-height:100vh;display:flex;justify-content:center;align-items:center;padding:18px;
+  margin:0;color:#fff;font-family:Arial,Helvetica,sans-serif;
+  width:100vw;height:100vh;overflow:hidden;background:#000;
 }
 .app{
-  width:min(760px,100%);background:#0a0a0a;border:1px solid #272727;
-  border-radius:18px;overflow:hidden;box-shadow:0 20px 70px #000;
+  position:relative;width:100vw;height:100vh;background:#0a0a0a;overflow:hidden;
 }
 .hero{
-  position:relative;background:#090909;aspect-ratio:900/600;width:100%;
+  position:absolute;inset:0;width:100%;height:100%;background:#090909;
 }
 .poster{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;
@@ -24,47 +24,48 @@ body{
 /* mini gym-console player, mounted between the two guys and the girl */
 .player{
   position:absolute;
-  left:53%;
-  top:34%;
-  width:min(31%,178px);
+  left:44%;
+  top:60%;
+  transform:translate(-50%,-50%);
+  width:min(27%,158px);
   z-index:3;
   background:linear-gradient(155deg,rgba(15,15,15,.94),rgba(4,4,4,.94));
   border:1px solid #eab308;
-  border-radius:10px;
-  padding:9px 9px 8px;
+  border-radius:9px;
+  padding:5px 8px 4px;
   box-shadow:0 8px 22px rgba(0,0,0,.65), inset 0 0 0 1px rgba(255,255,255,.03);
   backdrop-filter:blur(3px);
 }
 .title{
-  text-align:center;color:#facc15;font-weight:900;font-size:9.5px;
-  letter-spacing:.6px;margin-bottom:6px;line-height:1.2;
+  text-align:center;color:#facc15;font-weight:900;font-size:9px;
+  letter-spacing:.6px;margin-bottom:3px;line-height:1.1;
   text-shadow:0 0 8px rgba(250,204,21,.35);
   display:flex;align-items:center;justify-content:center;gap:3px;
 }
-.title .bar{width:12px;height:2px;background:#eab308;display:inline-block}
+.title .bar{width:10px;height:2px;background:#eab308;display:inline-block}
 .now{
-  min-height:26px;border-bottom:1px solid #262626;padding:0 0 6px;
+  min-height:0;border-bottom:1px solid #262626;padding:0 0 3px;
 }
-.label{font-size:6px;color:#8a8a8a;text-transform:uppercase;letter-spacing:1.4px}
-.song{font-size:9.5px;font-weight:800;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
-.controls{display:flex;align-items:center;gap:6px;margin-top:7px}
+.label{font-size:5.5px;color:#8a8a8a;text-transform:uppercase;letter-spacing:1.2px}
+.song{font-size:9px;font-weight:800;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.controls{display:flex;align-items:center;gap:5px;margin-top:4px}
 button{
-  border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;padding:0;line-height:1;
+  border:0;background:transparent;color:#fff;font-size:10px;cursor:pointer;padding:0;line-height:1;
 }
 .play{
-  width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe066,#eab308);color:#1a1400;
-  font-size:10px;display:grid;place-items:center;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,.5);
+  width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe066,#eab308);color:#1a1400;
+  font-size:9px;display:grid;place-items:center;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,.5);
 }
-.progress{margin-top:8px}
-input[type=range]{width:100%;accent-color:#facc15;cursor:pointer;height:10px}
-.times{display:flex;justify-content:space-between;color:#999;font-size:6px;margin-top:1px}
-.volume{display:flex;align-items:center;gap:3px;margin-left:auto;font-size:8px}
-.volume input{width:32px}
-.playlist{margin-top:7px;max-height:52px;overflow:auto}
+.progress{margin-top:4px}
+input[type=range]{width:100%;accent-color:#facc15;cursor:pointer;height:8px}
+.times{display:flex;justify-content:space-between;color:#999;font-size:5.5px;margin-top:0}
+.volume{display:flex;align-items:center;gap:2px;margin-left:auto;font-size:7px}
+.volume input{width:28px}
+.playlist{margin-top:4px;max-height:38px;overflow:auto}
 .playlist::-webkit-scrollbar{width:3px}
 .playlist::-webkit-scrollbar-thumb{background:#3a3200;border-radius:3px}
 .track{
-  padding:3.5px 5px;border-radius:5px;display:flex;gap:5px;align-items:center;
+  padding:2.5px 5px;border-radius:5px;display:flex;gap:5px;align-items:center;
   cursor:pointer;border:1px solid transparent;
 }
 .track:hover,.track.active{background:#171717;border-color:#5a4700}
@@ -73,13 +74,14 @@ input[type=range]{width:100%;accent-color:#facc15;cursor:pointer;height:10px}
 .note{display:none}
 
 .credit{
-  padding:9px 16px 14px;text-align:center;color:#8a8a8a;font-size:10.5px;line-height:1.5;
-  border-top:1px solid #1c1c1c;background:#0a0a0a;
+  position:absolute;left:0;right:0;bottom:0;z-index:3;
+  padding:6px 14px;text-align:center;color:#bbb;font-size:9.5px;line-height:1.4;
+  background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);
 }
 .credit b{color:#facc15}
 
 @media (max-width:480px){
-  .player{left:52%;top:32%;width:min(34%,150px);padding:7px 7px 6px}
+  .player{left:44%;top:60%;width:min(30%,148px);padding:4px 6px 3px}
   .title{font-size:8px}
   .song{font-size:8px}
 }
