@@ -3,207 +3,366 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Bhojpuri Gym Beats</title>
+<meta name="theme-color" content="#0a0a0a">
+<title>Bhojpuri Gym Beats | Desi Beat, Desi Baat, Desi Body</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --yellow:#facc15;
   --yellow-deep:#eab308;
-  --frame-ratio: 1536 / 1024; /* poster's true aspect ratio */
+  --bg:#0a0a0a;
+  --card:#141414;
+  --line:#262626;
+  --player-h:64px;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
+html{scroll-behavior:smooth}
+html,body{margin:0;padding:0}
 body{
-  color:#fff;font-family:'Oswald',Arial,sans-serif;
-  background:#000;
-  width:100%;
-  min-height:100dvh;
-  overflow-x:hidden;
+  background:var(--bg);color:#fff;font-family:'Oswald',Arial,sans-serif;
+  padding-bottom:calc(var(--player-h) + env(safe-area-inset-bottom) + 6px);
 }
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--yellow);color:#1a1400}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 
-.app{
-  position:relative;
-  width:100%;
-  height:100dvh; /* dynamic viewport height -> no mobile browser-chrome jump */
-  min-height:100svh;
-  background:#050505;
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  background:rgba(10,10,10,.75);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.logo{font-family:'Anton',sans-serif;letter-spacing:.5px;font-size:clamp(15px,2vw,19px)}
+.logo span{color:var(--yellow)}
+.nav-links{display:flex;gap:clamp(10px,2.4vw,26px);font-size:clamp(11px,1.4vw,14px);text-transform:uppercase;letter-spacing:.5px}
+.nav-links a{opacity:.85;transition:opacity .2s,color .2s}
+.nav-links a:hover{opacity:1;color:var(--yellow)}
+@media (max-width:520px){ .nav-links{gap:10px} .nav-links a{font-size:10px} }
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative;width:100%;
+  height:100dvh;min-height:520px;max-height:900px;
   overflow:hidden;
 }
-
-/* full-bleed blurred copy so there's never an empty/odd edge on any screen ratio */
-.bg-blur{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center;
-  filter:blur(38px) brightness(.4) saturate(1.15);
-  transform:scale(1.15);
+.hero img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;
 }
-.bg-tint{
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.55) 100%);
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.15) 45%,rgba(5,5,5,.65) 78%,rgba(5,5,5,.95) 100%);
 }
-
-/* the frame always matches the poster's real aspect ratio, so anything
-   positioned inside it (in %) lines up with the same spot on the image
-   on every screen size -- this is what fixes the "shifts / wrong size"
-   bug from before */
-.frame{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  aspect-ratio: var(--frame-ratio);
-  height:100%;
-  max-width:100%;
-  width:auto;
+.hero-content{
+  position:relative;z-index:2;height:100%;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 20px clamp(28px,5vh,56px);
+  max-width:760px;
 }
-@media (max-aspect-ratio: 1536/1024){
-  .frame{ width:100%; height:auto; }
+.eyebrow{
+  color:var(--yellow);font-size:clamp(11px,1.4vw,14px);letter-spacing:2px;
+  text-transform:uppercase;font-weight:600;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
 }
-
-.poster{
-  display:block;width:100%;height:100%;object-fit:cover;
-  filter:drop-shadow(0 20px 60px rgba(0,0,0,.6));
+.eyebrow::before{content:'';width:22px;height:2px;background:var(--yellow-deep);display:inline-block}
+.hero h1{
+  font-family:'Anton',sans-serif;font-weight:400;
+  font-size:clamp(34px,7vw,72px);line-height:1.02;margin:0 0 14px;
+  text-shadow:0 6px 30px rgba(0,0,0,.6);
 }
-
-/* ================= PLAYER ================= */
-.player{
-  position:absolute;
-  left:43.5%;
-  top:57%;
-  transform:translate(-50%,-50%);
-  width:20%;
-  min-width:150px;
-  max-width:230px;
-  z-index:3;
-  background:linear-gradient(160deg,rgba(18,18,18,.92),rgba(4,4,4,.95));
-  border:1px solid rgba(250,204,21,.55);
-  border-radius:14px;
-  padding:clamp(8px,1.1vw,14px);
-  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04) inset;
-  backdrop-filter:blur(6px);
-  font-family:'Oswald',sans-serif;
+.hero h1 .hl{color:var(--yellow)}
+.hero p{
+  font-size:clamp(13px,1.6vw,17px);color:#e2e2e2;max-width:520px;
+  line-height:1.55;margin:0 0 22px;
 }
-.player-head{
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  margin-bottom:6px;
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 24px;border-radius:30px;font-weight:700;font-size:clamp(12px,1.4vw,15px);
+  letter-spacing:.4px;text-transform:uppercase;cursor:pointer;border:0;
+  transition:transform .15s,box-shadow .15s;
 }
-.player-head .bar{width:12px;height:2px;background:var(--yellow-deep);display:inline-block;border-radius:2px}
-.player-head span.txt{
-  color:var(--yellow);font-weight:700;letter-spacing:1px;
-  font-size:clamp(8px,.95vw,12px);text-shadow:0 0 10px rgba(250,204,21,.4);
-  white-space:nowrap;
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{
+  background:linear-gradient(135deg,#ffe066,var(--yellow-deep));color:#1a1400;
+  box-shadow:0 8px 24px rgba(234,179,8,.35);
+}
+.btn-ghost{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);color:#fff;
 }
 
-.now{border-bottom:1px solid #262626;padding-bottom:6px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.eq{display:flex;align-items:flex-end;gap:2px;height:12px;flex:0 0 auto}
-.eq span{width:2.5px;background:var(--yellow);border-radius:2px;animation:eq 1s ease-in-out infinite;opacity:.85}
+/* ---------- SECTIONS ---------- */
+section{padding:clamp(50px,9vh,90px) 0}
+.section-tag{color:var(--yellow-deep);font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.section-title{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(26px,4vw,42px);margin:0 0 12px;line-height:1.1}
+.section-sub{color:#a8a8a8;max-width:560px;font-size:clamp(13px,1.5vw,15.5px);line-height:1.6;margin-bottom:clamp(30px,5vh,48px)}
+
+/* feature cards */
+.grid-features{
+  display:grid;gap:16px;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+}
+.f-card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:24px 20px;transition:transform .2s,border-color .2s,background .2s;
+}
+.f-card:hover{transform:translateY(-4px);border-color:rgba(250,204,21,.4);background:#181818}
+.f-card .ic{font-size:26px;margin-bottom:12px}
+.f-card h3{font-size:15px;text-transform:uppercase;letter-spacing:.5px;margin:0 0 6px;font-weight:600}
+.f-card p{font-size:12.5px;color:#9a9a9a;margin:0;line-height:1.5}
+
+/* playlist grid */
+.playlist-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.yt-link{
+  font-size:12.5px;color:var(--yellow);border:1px solid rgba(250,204,21,.4);
+  padding:8px 16px;border-radius:20px;display:inline-flex;gap:6px;align-items:center;
+  transition:background .2s;
+}
+.yt-link:hover{background:rgba(250,204,21,.1)}
+.grid-tracks{
+  display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+}
+.t-card{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.t-card:hover{border-color:rgba(250,204,21,.35)}
+.t-card.active{background:rgba(250,204,21,.08);border-color:var(--yellow-deep)}
+.t-num{
+  width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+  background:#1f1f1f;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--yellow);
+}
+.t-card.active .t-num{background:var(--yellow);color:#1a1400}
+.t-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.t-name.skel{color:#666}
+
+/* about */
+.about-box{
+  display:grid;gap:36px;grid-template-columns:1.1fr .9fr;align-items:center;
+}
+@media (max-width:760px){ .about-box{grid-template-columns:1fr} }
+.quote{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:28px 26px;position:relative;
+}
+.quote::before{content:'"';font-family:'Anton',sans-serif;font-size:70px;color:rgba(250,204,21,.25);position:absolute;top:-6px;left:14px;line-height:1}
+.quote p{position:relative;z-index:1;font-size:15px;line-height:1.7;color:#ddd;margin:10px 0 0}
+.about-box .section-sub{margin-bottom:0}
+.stat-row{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap}
+.stat b{display:block;font-family:'Anton',sans-serif;font-size:26px;color:var(--yellow)}
+.stat span{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:26px 0}
+.foot-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:#888}
+.foot-row b{color:var(--yellow)}
+
+/* ---------- STICKY MINI PLAYER ---------- */
+.player-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  height:var(--player-h);
+  padding:0 12px calc(env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,#141414,#0a0a0a);
+  border-top:1px solid rgba(250,204,21,.25);
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 -8px 24px rgba(0,0,0,.5);
+}
+.pb-art{
+  width:38px;height:38px;border-radius:9px;flex:0 0 auto;
+  background:linear-gradient(155deg,#222,#000);
+  display:grid;place-items:center;font-size:15px;border:1px solid rgba(250,204,21,.3);
+}
+.eq{display:flex;align-items:flex-end;gap:2px;height:12px}
+.eq span{width:2.5px;background:var(--yellow);border-radius:2px;animation:eq 1s ease-in-out infinite}
 .eq span:nth-child(1){animation-delay:-0.9s;height:40%}
 .eq span:nth-child(2){animation-delay:-0.4s;height:100%}
 .eq span:nth-child(3){animation-delay:-0.6s;height:65%}
-.eq span:nth-child(4){animation-delay:-0.2s;height:80%}
 @keyframes eq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
-.now.paused .eq span{animation-play-state:paused;transform:scaleY(.3)}
+.player-bar.paused .eq span{animation-play-state:paused;transform:scaleY(.3)}
 
-.now-text{min-width:0;flex:1}
-.label{font-size:clamp(6px,.6vw,8px);color:#9a9a9a;text-transform:uppercase;letter-spacing:1.3px}
-.song{font-size:clamp(8px,1vw,12px);font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.pb-info{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;justify-content:center}
+.pb-title{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-sub{font-size:9.5px;color:#888;text-transform:uppercase;letter-spacing:.5px}
 
-.progress{margin-top:2px}
-input[type=range]{
-  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
-  background:#2b2b2b;outline:none;cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:10px;height:10px;border-radius:50%;
-  background:var(--yellow);box-shadow:0 0 6px rgba(250,204,21,.8);cursor:pointer;
-}
-input[type=range]::-moz-range-thumb{
-  width:10px;height:10px;border-radius:50%;background:var(--yellow);border:none;
-}
-input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:transparent}
-.times{display:flex;justify-content:space-between;color:#999;font-size:clamp(6px,.6vw,8px);margin-top:2px}
-
-.controls{display:flex;align-items:center;gap:6px;margin-top:6px}
-button{border:0;background:transparent;color:#fff;cursor:pointer;padding:0;line-height:1}
-.ctrl-btn{font-size:clamp(11px,1.3vw,15px);opacity:.9;transition:transform .15s,opacity .15s}
-.ctrl-btn:hover{opacity:1;transform:scale(1.15)}
-.play{
-  width:clamp(22px,2.6vw,30px);height:clamp(22px,2.6vw,30px);border-radius:50%;
+.pb-controls{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.pb-btn{background:transparent;border:0;color:#fff;font-size:15px;cursor:pointer;padding:6px;opacity:.85;transition:opacity .15s,transform .15s}
+.pb-btn:hover{opacity:1;transform:scale(1.12)}
+.pb-play{
+  width:34px;height:34px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#ffe680,var(--yellow-deep));
-  color:#1a1400;font-size:clamp(9px,1.1vw,13px);display:grid;place-items:center;
-  font-weight:bold;box-shadow:0 3px 10px rgba(234,179,8,.5);
-  transition:transform .15s;
+  color:#1a1400;display:grid;place-items:center;font-size:13px;font-weight:bold;
+  box-shadow:0 3px 10px rgba(234,179,8,.5);
 }
-.play:hover{transform:scale(1.08)}
-.volume{display:flex;align-items:center;gap:3px;margin-left:auto;font-size:clamp(7px,.9vw,10px)}
-.volume input{width:clamp(26px,3.2vw,40px)}
+.pb-toggle{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-size:11px;padding:8px 12px;border-radius:20px;cursor:pointer;
+  display:flex;align-items:center;gap:5px;flex:0 0 auto;
+}
+.pb-toggle:hover{border-color:var(--yellow)}
+.pb-vol{display:none;align-items:center;gap:4px}
+@media (min-width:720px){ .pb-vol{display:flex} }
+.pb-vol input{width:60px}
 
-.playlist{margin-top:6px;max-height:70px;overflow-y:auto;padding-right:2px}
-.playlist::-webkit-scrollbar{width:3px}
-.playlist::-webkit-scrollbar-thumb{background:var(--yellow-deep);border-radius:3px}
-.track{
-  padding:3px 5px;border-radius:6px;display:flex;gap:6px;align-items:center;
-  cursor:pointer;border:1px solid transparent;transition:background .15s,border-color .15s;
+/* progress line sits along the very top edge of the bar */
+.pb-progress{position:absolute;left:0;right:0;top:-1px;height:3px;cursor:pointer}
+.pb-progress input[type=range]{
+  width:100%;height:3px;-webkit-appearance:none;appearance:none;
+  background:#2b2b2b;outline:none;margin:0;
 }
-.track:hover{background:#171717}
-.track.active{background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.4)}
-.num{color:var(--yellow);width:12px;text-align:center;font-weight:bold;font-size:clamp(6.5px,.7vw,9px);flex:0 0 auto}
-.name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(7px,.8vw,10px);color:#e8e8e8}
-.track.active .name{color:var(--yellow)}
+.pb-progress input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:0;height:0;
+}
+.pb-fill{position:absolute;left:0;top:0;height:3px;background:var(--yellow);width:0%;pointer-events:none;transition:width .25s linear}
 
-/* ================= CREDIT BAR ================= */
-.credit{
-  position:absolute;left:0;right:0;bottom:0;z-index:4;
-  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
-  text-align:center;color:#ddd;
-  font-size:clamp(9px,1.4vw,13px);line-height:1.4;
-  background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);
-  letter-spacing:.3px;
+/* ---------- PLAYLIST SHEET ---------- */
+.sheet-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;
+  opacity:0;pointer-events:none;transition:opacity .25s;
 }
-.credit b{color:var(--yellow)}
-
-@media (max-width:480px){
-  .player{left:44%;top:56%;width:32%;min-width:118px}
-  .playlist{max-height:56px}
+.sheet-overlay.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:61;
+  background:#111;border-top:1px solid rgba(250,204,21,.3);
+  border-radius:20px 20px 0 0;
+  max-height:72vh;display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);
+  padding-bottom:env(safe-area-inset-bottom);
 }
+.sheet.open{transform:translateY(0)}
+.sheet-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px 10px;border-bottom:1px solid var(--line);
+}
+.sheet-head b{font-size:13px;letter-spacing:.5px}
+.sheet-head b span{color:var(--yellow)}
+.sheet-close{background:transparent;border:0;color:#aaa;font-size:18px;cursor:pointer}
+.sheet-list{overflow-y:auto;padding:8px 10px 18px}
+.s-track{
+  display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:10px;cursor:pointer;
+}
+.s-track:hover{background:#1a1a1a}
+.s-track.active{background:rgba(250,204,21,.1)}
+.s-track .t-num{width:26px;height:26px;font-size:10.5px}
+.s-track .t-name{font-size:12.5px}
+.s-track.active .t-name{color:var(--yellow)}
 </style>
 </head>
 <body>
-<div class="app">
-  <img class="bg-blur" src="gym_clean_jpeg.png" alt="" aria-hidden="true">
-  <div class="bg-tint"></div>
 
-  <div class="frame">
-    <img class="poster" src="gym_clean_jpeg.png" alt="Bhojpuri Gym Beats">
+<nav class="nav">
+  <div class="logo">🏋️ GYM<span>BEATS</span></div>
+  <div class="nav-links">
+    <a href="#home">होम</a>
+    <a href="#why">क्यों हम</a>
+    <a href="#playlist">प्लेलिस्ट</a>
+    <a href="#about">हमारे बारे में</a>
+  </div>
+</nav>
 
-    <div class="player">
-      <div class="player-head"><span class="bar"></span><span class="txt">GYM BEATS</span><span class="bar"></span></div>
-
-      <div class="now" id="nowRow">
-        <div class="eq"><span></span><span></span><span></span><span></span></div>
-        <div class="now-text">
-          <div class="label">Now Playing</div>
-          <div class="song" id="songName">Loading...</div>
-        </div>
-      </div>
-
-      <div class="progress">
-        <input id="seek" type="range" min="0" max="100" value="0">
-        <div class="times"><span id="current">00:00</span><span id="duration">00:00</span></div>
-      </div>
-
-      <div class="controls">
-        <button class="ctrl-btn" id="prev" title="Previous">⏮</button>
-        <button id="play" class="play" title="Play/Pause">▶</button>
-        <button class="ctrl-btn" id="next" title="Next">⏭</button>
-        <div class="volume">🔊<input id="vol" type="range" min="0" max="1" step=".01" value=".8"></div>
-      </div>
-
-      <div class="playlist" id="playlist"></div>
+<section class="hero" id="home">
+  <img src="gym_clean_jpeg.png" alt="Bhojpuri Gym Beats">
+  <div class="hero-content">
+    <div class="eyebrow">पहिले बॉडी, फिर सबकुछ</div>
+    <h1>BHOJPURI<br><span class="hl">GYM BEATS</span></h1>
+    <p>जिम मेहनत की जगह है, यहाँ गाने भी देसी चाहिए! देसी बीट, देसी बात, देसी बॉडी — पूरी महफ़िल एक जगह, सीधे तुम्हारे हेडफ़ोन में।</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="togglePlay()">▶ वर्कआउट शुरू करो</button>
+      <a class="btn btn-ghost" href="#playlist">☰ पूरी प्लेलिस्ट</a>
     </div>
   </div>
+</section>
 
-  <div class="credit">
-    🎧 Playlist seedhe YouTube se stream hoti hai — <b>play</b> dabao aur gym shuru karo.
+<section id="why">
+  <div class="wrap">
+    <div class="section-tag">क्यों ये प्लेलिस्ट</div>
+    <h2 class="section-title">हर सेट के लिए एक बीट</h2>
+    <p class="section-sub">जिम मेहनत की जगह है, यहाँ गाने भी देसी चाहिए — इसलिए बनाई गई है ये पूरी तरह से देसी, हाई-एनर्जी जिम प्लेलिस्ट।</p>
+    <div class="grid-features">
+      <div class="f-card"><div class="ic">🏋️</div><h3>Boost Workout</h3><p>हर बीट के साथ एक और रेप, एक और सेट।</p></div>
+      <div class="f-card"><div class="ic">⚡</div><h3>Feel The Energy</h3><p>थकान भूल जाओ, बस बीट पे चलते जाओ।</p></div>
+      <div class="f-card"><div class="ic">🎧</div><h3>Desi Beats Only</h3><p>कोई विदेशी ट्रैक नहीं — सिर्फ़ अपनी मिट्टी की धुन।</p></div>
+      <div class="f-card"><div class="ic">💪</div><h3>Focus &amp; Power</h3><p>दिमाग शांत, ताकत डबल — यही है असली फोकस।</p></div>
+      <div class="f-card"><div class="ic">🔥</div><h3>Listen &amp; Lift</h3><p>हेडफ़ोन लगाओ, वॉल्यूम बढ़ाओ, और बॉडी बनाओ।</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="playlist">
+  <div class="wrap">
+    <div class="playlist-toolbar">
+      <div>
+        <div class="section-tag">पूरा संग्रह</div>
+        <h2 class="section-title" style="margin-bottom:4px">जिम की महफ़िल</h2>
+      </div>
+      <a class="yt-link" id="ytFullLink" href="#" target="_blank" rel="noopener">▶ YouTube पर पूरी प्लेलिस्ट खोलो</a>
+    </div>
+    <div class="grid-tracks" id="trackGrid">
+      <div class="t-card"><div class="t-num">1</div><div class="t-name skel">लोड हो रहा है…</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="about-box">
+      <div>
+        <div class="section-tag">हमारे बारे में</div>
+        <h2 class="section-title">पसीने से बॉडी, बीट से जुनून</h2>
+        <p class="section-sub">ये सिर्फ़ एक प्लेलिस्ट नहीं, एक अखाड़ा है — जहाँ हर देसी गाना तुम्हें एक और रेप खींचने की ताकत देता है। हेडफ़ोन लगाओ, वॉल्यूम बढ़ाओ, और आज की मेहनत शुरू करो।</p>
+        <div class="stat-row">
+          <div class="stat"><b id="statCount">—</b><span>देसी ट्रैक्स</span></div>
+          <div class="stat"><b>100%</b><span>देसी वाइब</span></div>
+          <div class="stat"><b>24×7</b><span>जिम रेडी</span></div>
+        </div>
+      </div>
+      <div class="quote">
+        <p>"डिसिप्लिन आज, ताकत कल — बस एक अच्छी बीट चाहिए साथ में।"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>© 2026 <b>Bhojpuri Gym Beats</b> · देसी बीट, देसी बात, देसी बॉडी</span>
+    <span>🎧 हेडफ़ोन लगाओ, वॉल्यूम बढ़ाओ, और बॉडी बनाओ!</span>
+  </div>
+</footer>
+
+<!-- ================= STICKY PLAYER ================= -->
+<div class="player-bar" id="playerBar">
+  <div class="pb-progress" id="pbProgressWrap">
+    <div class="pb-fill" id="pbFill"></div>
+    <input id="seek" type="range" min="0" max="100" value="0" style="opacity:0;position:relative;z-index:2">
+  </div>
+  <div class="pb-art"><div class="eq"><span></span><span></span><span></span></div></div>
+  <div class="pb-info">
+    <div class="pb-title" id="songName">प्लेयर लोड हो रहा है…</div>
+    <div class="pb-sub"><span id="current">00:00</span> / <span id="duration">00:00</span></div>
+  </div>
+  <div class="pb-controls">
+    <button class="pb-btn" id="prev" title="Previous">⏮</button>
+    <button class="pb-play" id="play" title="Play/Pause">▶</button>
+    <button class="pb-btn" id="next" title="Next">⏭</button>
+  </div>
+  <div class="pb-vol">🔊<input id="vol" type="range" min="0" max="1" step=".01" value=".8"></div>
+  <button class="pb-toggle" id="sheetToggle">☰ सूची</button>
+</div>
+
+<div class="sheet-overlay" id="sheetOverlay"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-head">
+    <b>प्लेलिस्ट · <span id="sheetCount">…</span> गाने</b>
+    <button class="sheet-close" id="sheetClose">✕</button>
+  </div>
+  <div class="sheet-list" id="sheetList">
+    <div class="s-track"><div class="t-num">1</div><div class="t-name skel">प्लेयर लोड हो रहा है, कृपया प्रतीक्षा करें…</div></div>
   </div>
 </div>
 
@@ -211,6 +370,7 @@ button{border:0;background:transparent;color:#fff;cursor:pointer;padding:0;line-
 
 <script>
 const PLAYLIST_ID = "PLmq4sk5e9IoHjVAqqtktPCcKGZL9ISMIN";
+document.getElementById('ytFullLink').href = "https://youtube.com/playlist?list=" + PLAYLIST_ID;
 
 let player, ready=false, tracks=[], index=0, pollTries=0;
 const $=id=>document.getElementById(id);
@@ -219,18 +379,8 @@ const titleCache = new Map();
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('ytplayer',{
     height:'1',width:'1',
-    playerVars:{
-      listType:'playlist',
-      list:PLAYLIST_ID,
-      controls:0,
-      playsinline:1,
-      rel:0
-    },
-    events:{
-      onReady:onReady,
-      onStateChange:onState,
-      onError:onErr
-    }
+    playerVars:{ listType:'playlist', list:PLAYLIST_ID, controls:0, playsinline:1, rel:0 },
+    events:{ onReady:onReady, onStateChange:onState, onError:onErr }
   });
 }
 function onReady(){
@@ -242,108 +392,117 @@ function pollForPlaylist(){
   const list = player.getPlaylist ? player.getPlaylist() : null;
   if(list && list.length){
     tracks = list.map((id,i)=>({id,name:"Track "+(i+1)}));
-    render();
+    $('statCount').textContent = tracks.length;
+    $('sheetCount').textContent = tracks.length;
+    renderAll();
     update();
     fetchRealTitles();
     return;
   }
   pollTries++;
-  if(pollTries < 30){
-    setTimeout(pollForPlaylist, 500);
-  } else {
-    $('songName').textContent = "Playlist load nahi hui";
-  }
+  if(pollTries < 30){ setTimeout(pollForPlaylist, 500); }
+  else{ $('songName').textContent = "Playlist load nahi hui"; }
 }
 
-// pulls the real video titles via YouTube's public oEmbed endpoint
-// (no API key needed) so the playlist shows actual song names.
 async function fetchRealTitles(){
-  await Promise.all(tracks.map(async (t, i)=>{
-    if(titleCache.has(t.id)){
-      tracks[i].name = titleCache.get(t.id);
-      return;
-    }
+  await Promise.all(tracks.map(async (t,i)=>{
+    if(titleCache.has(t.id)){ tracks[i].name = titleCache.get(t.id); return; }
     try{
       const url = "https://www.youtube.com/oembed?format=json&url=" +
         encodeURIComponent("https://www.youtube.com/watch?v=" + t.id);
       const res = await fetch(url);
       if(res.ok){
         const data = await res.json();
-        if(data && data.title){
-          titleCache.set(t.id, data.title);
-          tracks[i].name = data.title;
-        }
+        if(data && data.title){ titleCache.set(t.id, data.title); tracks[i].name = data.title; }
       }
-    }catch(e){ /* keep fallback "Track N" name */ }
+    }catch(e){}
   }));
-  render();
+  renderAll();
   update();
 }
 
-function render(){
-  const box=$('playlist');
-  box.innerHTML='';
-  tracks.forEach((t,i)=>{
-    const d=document.createElement('div');
-    d.className='track '+(i===index?'active':'');
-    d.innerHTML=`<span class="num">${i+1}</span><span class="name">${escapeHtml(t.name)}</span>`;
-    d.onclick=()=>select(i);
-    box.appendChild(d);
-  });
-}
 function escapeHtml(s){
   return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
-function select(i){
-  index=i;
-  player.playVideoAt(index);
-  update();
+
+function renderAll(){
+  const sl = $('sheetList'); sl.innerHTML='';
+  const tg = $('trackGrid'); tg.innerHTML='';
+  tracks.forEach((t,i)=>{
+    const row = document.createElement('div');
+    row.className = 's-track ' + (i===index?'active':'');
+    row.innerHTML = `<div class="t-num">${i+1}</div><div class="t-name">${escapeHtml(t.name)}</div>`;
+    row.onclick = ()=>{ select(i); closeSheet(); };
+    sl.appendChild(row);
+
+    const card = document.createElement('div');
+    card.className = 't-card ' + (i===index?'active':'');
+    card.innerHTML = `<div class="t-num">${i+1}</div><div class="t-name">${escapeHtml(t.name)}</div>`;
+    card.onclick = ()=>{ select(i); window.scrollTo({top:0,behavior:'smooth'}); };
+    tg.appendChild(card);
+  });
 }
+
+function select(i){ index=i; player.playVideoAt(index); update(); }
+
 function update(){
-  if(!ready)return;
+  if(!ready) return;
   const i = player.getPlaylistIndex ? player.getPlaylistIndex() : -1;
   if(i>=0) index=i;
   const cached = tracks[index] ? tracks[index].name : null;
   const data = player.getVideoData ? player.getVideoData() : {};
   $('songName').textContent = cached || (data && data.title) || ("Track "+(index+1));
-  document.querySelectorAll('.track').forEach((x,i)=>x.classList.toggle('active',i===index));
+  const cards = document.querySelectorAll('.t-card');
+  const rows = document.querySelectorAll('.s-track');
+  cards.forEach(el=>el.classList.remove('active'));
+  rows.forEach(el=>el.classList.remove('active'));
+  if(cards[index]) cards[index].classList.add('active');
+  if(rows[index]) rows[index].classList.add('active');
 }
+
 function onState(e){
-  const playing = e.data===YT.PlayerState.PLAYING;
+  const playing = e.data === YT.PlayerState.PLAYING;
   $('play').textContent = playing ? '⏸' : '▶';
-  $('nowRow').classList.toggle('paused', !playing);
+  $('playerBar').classList.toggle('paused', !playing);
   update();
 }
-function onErr(){
-  if(ready) player.nextVideo();
+function onErr(){ if(ready) player.nextVideo(); }
+
+function togglePlay(){
+  if(!ready) return;
+  const s = player.getPlayerState();
+  if(s === YT.PlayerState.PLAYING) player.pauseVideo(); else player.playVideo();
 }
-$('play').onclick=()=>{
-  if(!ready)return;
-  const s=player.getPlayerState();
-  if(s===YT.PlayerState.PLAYING)player.pauseVideo();else player.playVideo();
-};
-$('prev').onclick=()=>ready&&player.previousVideo();
-$('next').onclick=()=>ready&&player.nextVideo();
-$('vol').oninput=e=>ready&&player.setVolume(Number(e.target.value)*100);
-$('seek').oninput=e=>{
+$('play').onclick = togglePlay;
+$('prev').onclick = ()=> ready && player.previousVideo();
+$('next').onclick = ()=> ready && player.nextVideo();
+$('vol').oninput = e => ready && player.setVolume(Number(e.target.value)*100);
+$('seek').oninput = e => {
   if(ready){
-    const d=player.getDuration();
-    if(d)player.seekTo(d*Number(e.target.value)/100,true);
+    const d = player.getDuration();
+    if(d) player.seekTo(d*Number(e.target.value)/100, true);
   }
 };
+
+function openSheet(){ $('sheetOverlay').classList.add('open'); $('sheet').classList.add('open'); }
+function closeSheet(){ $('sheetOverlay').classList.remove('open'); $('sheet').classList.remove('open'); }
+$('sheetToggle').onclick = openSheet;
+$('sheetClose').onclick = closeSheet;
+$('sheetOverlay').onclick = closeSheet;
+
 setInterval(()=>{
-  if(!ready)return;
-  const d=player.getDuration(),c=player.getCurrentTime();
+  if(!ready) return;
+  const d = player.getDuration(), c = player.getCurrentTime();
   if(d){
-    $('seek').value=(c/d)*100;
-    $('current').textContent=fmt(c);
-    $('duration').textContent=fmt(d);
+    const pct = (c/d)*100;
+    $('seek').value = pct;
+    $('pbFill').style.width = pct + '%';
+    $('current').textContent = fmt(c);
+    $('duration').textContent = fmt(d);
   }
   update();
-},500);
-function fmt(x){
-  x=Math.floor(x||0);return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');
-}
+}, 500);
+function fmt(x){ x=Math.floor(x||0); return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'); }
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
 </body>
