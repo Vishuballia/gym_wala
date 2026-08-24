@@ -143,13 +143,39 @@ section{padding:clamp(50px,9vh,90px) 0}
 .yt-link{
   font-size:12.5px;color:var(--yellow);border:1px solid rgba(250,204,21,.4);
   padding:8px 16px;border-radius:20px;display:inline-flex;gap:6px;align-items:center;
-  transition:background .2s;
+  transition:background .2s;background:transparent;cursor:pointer;
 }
 .yt-link:hover{background:rgba(250,204,21,.1)}
 .grid-tracks{
   display:grid;gap:12px;
   grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
 }
+
+/* playlist chooser (multiple playlists) */
+.grid-playlists{
+  display:grid;gap:16px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  margin-bottom:8px;
+}
+.pl-card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;
+  transition:transform .2s,border-color .2s,background .2s;
+}
+.pl-card:hover{transform:translateY(-3px);border-color:rgba(250,204,21,.4);background:#181818}
+.pl-card.active{border-color:var(--yellow-deep);background:rgba(250,204,21,.08)}
+.pl-head{display:flex;align-items:center;gap:12px}
+.pl-ic{width:42px;height:42px;border-radius:12px;background:#1f1f1f;display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+.pl-name{font-size:14px;font-weight:600;line-height:1.3}
+.pl-sub{font-size:11px;color:#9a9a9a;margin-top:2px}
+.pl-badge{display:inline-block;font-size:9.5px;background:rgba(250,204,21,.15);color:var(--yellow);border:1px solid rgba(250,204,21,.3);padding:3px 9px;border-radius:10px;letter-spacing:.4px;width:fit-content}
+.pl-play{
+  align-self:flex-start;background:linear-gradient(135deg,#ffe066,var(--yellow-deep));color:#1a1400;
+  border:0;border-radius:20px;padding:8px 16px;font-size:11.5px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;transition:transform .15s;
+}
+.pl-play:hover{transform:translateY(-2px)}
+#trackView{display:none}
 .t-card{
   background:var(--card);border:1px solid var(--line);border-radius:12px;
   padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;
@@ -326,12 +352,21 @@ footer{border-top:1px solid var(--line);padding:26px 0}
     <div class="playlist-toolbar">
       <div>
         <div class="section-tag">पूरा संग्रह</div>
-        <h2 class="section-title" style="margin-bottom:4px">जिम की महफ़िल</h2>
+        <h2 class="section-title" style="margin-bottom:4px" id="playlistSectionTitle">जिम की महफ़िल</h2>
+        <p class="section-sub" id="playlistSectionSub" style="margin:8px 0 0">नीचे 9 धांसू प्लेलिस्ट में से कोई भी चुनो। 🔀 वाली प्लेलिस्ट YouTube का ऑटो-मिक्स (Radio) है, बाकी सब एक तय क्रम वाली प्लेलिस्ट हैं।</p>
       </div>
-      <a class="yt-link" id="ytFullLink" href="#" target="_blank" rel="noopener">▶ YouTube पर पूरी प्लेलिस्ट खोलो</a>
+      <a class="yt-link" id="ytFullLink" href="#" target="_blank" rel="noopener" style="display:none">▶ YouTube पर खोलो</a>
     </div>
-    <div class="grid-tracks" id="trackGrid">
-      <div class="t-card"><div class="t-num">1</div><div class="t-name skel">लोड हो रहा है…</div></div>
+
+    <!-- playlist chooser: list of all playlists -->
+    <div class="grid-playlists" id="playlistChooser">
+      <div class="pl-card"><div class="pl-head"><div class="pl-ic">🎵</div><div><div class="pl-name skel">लोड हो रहा है…</div></div></div></div>
+    </div>
+
+    <!-- track view: songs of the selected playlist -->
+    <div id="trackView">
+      <button class="yt-link" id="backToPlaylists" style="margin-bottom:18px">← सभी प्लेलिस्ट पर वापस</button>
+      <div class="grid-tracks" id="trackGrid"></div>
     </div>
   </div>
 </section>
@@ -344,7 +379,7 @@ footer{border-top:1px solid var(--line);padding:26px 0}
         <h2 class="section-title">पसीने से बॉडी, बीट से जुनून</h2>
         <p class="section-sub">ये सिर्फ़ एक प्लेलिस्ट नहीं, एक अखाड़ा है — जहाँ हर देसी गाना तुम्हें एक और रेप खींचने की ताकत देता है। हेडफ़ोन लगाओ, वॉल्यूम बढ़ाओ, और आज की मेहनत शुरू करो।</p>
         <div class="stat-row">
-          <div class="stat"><b id="statCount">—</b><span>देसी ट्रैक्स</span></div>
+          <div class="stat"><b id="statCount">9</b><span>देसी प्लेलिस्ट</span></div>
           <div class="stat"><b>100%</b><span>देसी वाइब</span></div>
           <div class="stat"><b>24×7</b><span>जिम रेडी</span></div>
         </div>
@@ -397,42 +432,64 @@ footer{border-top:1px solid var(--line);padding:26px 0}
 <div id="ytplayer" style="position:absolute;width:1px;height:1px;left:-9999px;top:-9999px"></div>
 
 <script>
-const PLAYLIST_ID = "PLmq4sk5e9IoHjVAqqtktPCcKGZL9ISMIN";
-document.getElementById('ytFullLink').href = "https://youtube.com/playlist?list=" + PLAYLIST_ID;
+/* ---------- सारी प्लेलिस्ट यहाँ ---------- */
+const PLAYLISTS = [
+  { id:"RDCLAK5uy_ltBUnE76-ol1ufdgUWN4T7WtFljvu8gYM", name:"भोजपुरी मिक्स रेडियो 1", radio:true },
+  { id:"PLmFvwyChKI3XIksE2jnF2cXPWOHm19cPC",            name:"जिम पावर प्लेलिस्ट",     radio:false },
+  { id:"PLwyqDgjhF4Qpq6kslMcQ8NR6RHb-Z4Tu-",             name:"देसी वर्कआउट बीट्स",     radio:false },
+  { id:"PLJ3M6AoVR-gYZrmUwteMTMSy0xACcTAh-",             name:"भोजपुरी जिम हिट्स",      radio:false },
+  { id:"RDCLAK5uy_mS-shRB3E7FDoGrsjcgyt13Y42YmJOMy4",    name:"भोजपुरी मिक्स रेडियो 2", radio:true },
+  { id:"PLQCel2AtFUEmJ3sHW2L0W3HfwvdTRCaHt",             name:"हाई एनर्जी देसी बीट्स",  radio:false },
+  { id:"PLFgOISmN8jwf4bBX_VSZLEK-_6Xh8e5fb",             name:"जिम मोटिवेशन प्लेलिस्ट", radio:false },
+  { id:"PL_drFNAprELhyMNtr-qDDGhJkTeSPzRvV",             name:"देसी बीट्स कलेक्शन",     radio:false },
+  { id:"PLTb6agHpQdPaDrdBv7vZwZUcD2Tzblyu7",             name:"भोजपुरी वर्कआउट मिक्स",  radio:false },
+];
+const DEFAULT_PL = 1; // शुरुआत में बैकग्राउंड में यही cue रहेगी (radio wali nahi)
 
 let player, ready=false, tracks=[], index=0, pollTries=0;
+let currentPL = -1, pendingSelect = null, loadToken = 0;
 const $=id=>document.getElementById(id);
 const titleCache = new Map();
+const countCache = {};
 
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('ytplayer',{
     height:'1',width:'1',
-    playerVars:{ listType:'playlist', list:PLAYLIST_ID, controls:0, playsinline:1, rel:0 },
+    playerVars:{ listType:'playlist', list:PLAYLISTS[DEFAULT_PL].id, controls:0, playsinline:1, rel:0 },
     events:{ onReady:onReady, onStateChange:onState, onError:onErr }
   });
 }
 function onReady(){
   ready=true;
   player.setVolume(80);
+  try{ player.setShuffle(false); }catch(e){} // हमेशा क्रम से बजे, random nahi
+  currentPL = DEFAULT_PL;
+  loadToken++;
   pollForPlaylist();
+  renderChooser();
+  if(pendingSelect){ const p=pendingSelect; pendingSelect=null; openPlaylist(p.idx, p.autoplay); }
 }
+
 function pollForPlaylist(){
+  const myToken = loadToken;
   const list = player.getPlaylist ? player.getPlaylist() : null;
+  if(myToken !== loadToken) return; // इस बीच कोई और प्लेलिस्ट खुल गई
   if(list && list.length){
     tracks = list.map((id,i)=>({id,name:"Track "+(i+1)}));
-    $('statCount').textContent = tracks.length;
-    $('sheetCount').textContent = tracks.length;
-    renderAll();
+    countCache[PLAYLISTS[currentPL].id] = tracks.length;
+    renderChooserCounts();
+    renderTracks();
     update();
     fetchRealTitles();
     return;
   }
   pollTries++;
   if(pollTries < 30){ setTimeout(pollForPlaylist, 500); }
-  else{ $('songName').textContent = "Playlist load nahi hui"; }
+  else{ $('songName').textContent = "प्लेलिस्ट लोड नहीं हुई"; }
 }
 
 async function fetchRealTitles(){
+  const myToken = loadToken;
   await Promise.all(tracks.map(async (t,i)=>{
     if(titleCache.has(t.id)){ tracks[i].name = titleCache.get(t.id); return; }
     try{
@@ -445,7 +502,8 @@ async function fetchRealTitles(){
       }
     }catch(e){}
   }));
-  renderAll();
+  if(myToken !== loadToken) return;
+  renderTracks();
   update();
 }
 
@@ -453,24 +511,98 @@ function escapeHtml(s){
   return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
 
-function renderAll(){
-  const sl = $('sheetList'); sl.innerHTML='';
-  const tg = $('trackGrid'); tg.innerHTML='';
-  tracks.forEach((t,i)=>{
-    const row = document.createElement('div');
-    row.className = 's-track ' + (i===index?'active':'');
-    row.innerHTML = `<div class="t-num">${i+1}</div><div class="t-name">${escapeHtml(t.name)}</div>`;
-    row.onclick = ()=>{ select(i); closeSheet(); };
-    sl.appendChild(row);
-
+/* ---------- प्लेलिस्ट की लिस्ट (चुनने के लिए) ---------- */
+function renderChooser(){
+  const el = $('playlistChooser');
+  el.innerHTML = '';
+  PLAYLISTS.forEach((pl,i)=>{
+    const cnt = countCache[pl.id];
     const card = document.createElement('div');
-    card.className = 't-card ' + (i===index?'active':'');
-    card.innerHTML = `<div class="t-num">${i+1}</div><div class="t-name">${escapeHtml(t.name)}</div>`;
-    card.onclick = ()=>{ select(i); window.scrollTo({top:0,behavior:'smooth'}); };
-    tg.appendChild(card);
+    card.className = 'pl-card' + (i===currentPL?' active':'');
+    card.innerHTML = `
+      <div class="pl-head">
+        <div class="pl-ic">${pl.radio?'🔀':'🎵'}</div>
+        <div>
+          <div class="pl-name">${escapeHtml(pl.name)}</div>
+          <div class="pl-sub">${cnt?cnt+' गाने':'टैप करके देखो'}</div>
+        </div>
+      </div>
+      ${pl.radio?'<span class="pl-badge">यूट्यूब ऑटो-मिक्स</span>':''}
+      <button class="pl-play" type="button">▶ अभी बजाओ</button>
+    `;
+    card.querySelector('.pl-play').onclick = (e)=>{ e.stopPropagation(); openPlaylist(i, true); };
+    card.onclick = ()=> openPlaylist(i, false);
+    el.appendChild(card);
+  });
+}
+function renderChooserCounts(){
+  document.querySelectorAll('#playlistChooser .pl-card').forEach((card,i)=>{
+    const cnt = countCache[PLAYLISTS[i].id];
+    if(cnt){ const sub = card.querySelector('.pl-sub'); if(sub) sub.textContent = cnt+' गाने'; }
   });
 }
 
+/* ---------- किसी एक प्लेलिस्ट को खोलना ---------- */
+function openPlaylist(idx, autoplay){
+  if(!ready){ pendingSelect = {idx, autoplay}; return; }
+  currentPL = idx;
+  index = 0;
+  tracks = [];
+  pollTries = 0;
+  loadToken++;
+  const pl = PLAYLISTS[idx];
+
+  $('ytFullLink').style.display = 'inline-flex';
+  $('ytFullLink').href = "https://youtube.com/playlist?list=" + pl.id;
+  $('playlistSectionTitle').textContent = pl.name;
+  $('playlistSectionSub').textContent = pl.radio
+    ? 'ये YouTube का ऑटो-मिक्स (Radio) है — गाने क्रम से ही बजेंगे, पर लिस्ट समय के साथ बदल भी सकती है।'
+    : 'गाना चुनो, वो प्लेलिस्ट क्रम से (line by line) बजने लगेगी — random nahi.';
+
+  document.querySelectorAll('#playlistChooser .pl-card').forEach((c,i)=> c.classList.toggle('active', i===idx));
+
+  $('trackView').style.display = 'block';
+  $('trackGrid').innerHTML = '<div class="t-card"><div class="t-num">1</div><div class="t-name skel">लोड हो रहा है…</div></div>';
+  $('trackView').scrollIntoView({behavior:'smooth', block:'start'});
+
+  try{ player.setShuffle(false); }catch(e){} // shuffle हमेशा बंद
+  if(autoplay){
+    player.loadPlaylist({ list: pl.id, listType:'playlist', index:0 });
+  }else{
+    player.cuePlaylist({ list: pl.id, listType:'playlist', index:0 });
+  }
+  pollForPlaylist();
+}
+$('backToPlaylists').onclick = ()=>{ $('trackView').style.display = 'none'; };
+
+/* ---------- चुनी हुई प्लेलिस्ट के गाने दिखाना ---------- */
+function renderTracks(){
+  const tg = $('trackGrid');
+  if(tg){
+    tg.innerHTML='';
+    tracks.forEach((t,i)=>{
+      const card = document.createElement('div');
+      card.className = 't-card ' + (i===index?'active':'');
+      card.innerHTML = `<div class="t-num">${i+1}</div><div class="t-name">${escapeHtml(t.name)}</div>`;
+      card.onclick = ()=>{ select(i); };
+      tg.appendChild(card);
+    });
+  }
+  const sl = $('sheetList');
+  if(sl){
+    sl.innerHTML='';
+    $('sheetCount').textContent = tracks.length;
+    tracks.forEach((t,i)=>{
+      const row = document.createElement('div');
+      row.className = 's-track ' + (i===index?'active':'');
+      row.innerHTML = `<div class="t-num">${i+1}</div><div class="t-name">${escapeHtml(t.name)}</div>`;
+      row.onclick = ()=>{ select(i); closeSheet(); };
+      sl.appendChild(row);
+    });
+  }
+}
+
+/* गाना क्लिक करने पर वही प्लेलिस्ट, उसी गाने से क्रम में बजने लगती है */
 function select(i){ index=i; player.playVideoAt(index); update(); }
 
 function update(){
@@ -481,8 +613,8 @@ function update(){
   const data = player.getVideoData ? player.getVideoData() : {};
   const title = cached || (data && data.title) || ("Track "+(index+1));
   $('songName').textContent = title;
-  const cards = document.querySelectorAll('.t-card');
-  const rows = document.querySelectorAll('.s-track');
+  const cards = document.querySelectorAll('#trackGrid .t-card');
+  const rows = document.querySelectorAll('#sheetList .s-track');
   cards.forEach(el=>el.classList.remove('active'));
   rows.forEach(el=>el.classList.remove('active'));
   if(cards[index]) cards[index].classList.add('active');
