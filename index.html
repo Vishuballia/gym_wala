@@ -348,6 +348,81 @@ footer{border-top:1px solid var(--line);padding:26px 0}
 .s-track .t-num{width:26px;height:26px;font-size:10.5px}
 .s-track .t-name{font-size:12.5px}
 .s-track.active .t-name{color:var(--yellow)}
+
+/* ---------- DUMBBELL LOADING ANIMATION ---------- */
+.dumbbell-loader{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 0}
+.dumbbell-loader .db{
+  display:flex;align-items:center;gap:3px;
+  animation:dbLift 1.1s ease-in-out infinite;
+  transform-origin:center;
+}
+.dumbbell-loader .plate{width:9px;height:20px;background:var(--yellow);border-radius:3px}
+.dumbbell-loader .plate.small{width:6px;height:13px}
+.dumbbell-loader .bar{width:22px;height:4px;background:#888;border-radius:2px}
+@keyframes dbLift{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-7px) rotate(2deg)}
+}
+.dumbbell-loader .txt{font-size:11.5px;color:#9a9a9a;letter-spacing:.3px}
+.pb-art.loading{animation:none}
+.pb-art.loading .db{animation:dbLift .9s ease-in-out infinite}
+
+/* skeleton cards use the mini heartbeat pulse */
+.skel{position:relative}
+.skel::after{
+  content:'';position:absolute;left:0;bottom:-3px;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--yellow),transparent);
+  background-size:200% 100%;animation:heartline 1.4s linear infinite;
+}
+@keyframes heartline{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ---------- REST TIMER ---------- */
+.rest-wrap{position:relative;flex:0 0 auto}
+.rest-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-size:11px;padding:8px 10px;border-radius:20px;cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+}
+.rest-btn:hover{border-color:var(--yellow)}
+.rest-btn.on{border-color:var(--yellow-deep);background:rgba(250,204,21,.12);color:var(--yellow)}
+.rest-panel{
+  position:absolute;right:0;bottom:calc(var(--player-h) + 10px);z-index:65;
+  width:200px;background:#141414;border:1px solid rgba(250,204,21,.3);
+  border-radius:16px;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,.5);
+  display:none;flex-direction:column;align-items:center;gap:10px;
+}
+.rest-panel.open{display:flex}
+.rest-panel h4{margin:0;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#aaa;font-weight:600}
+.rest-clock{font-family:'Anton',sans-serif;font-size:40px;color:var(--yellow);line-height:1}
+.rest-presets{display:flex;gap:8px}
+.rest-preset{
+  background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;
+  padding:6px 12px;border-radius:14px;font-size:11.5px;cursor:pointer;
+}
+.rest-preset.active{background:var(--yellow-deep);color:#1a1400;border-color:var(--yellow-deep)}
+.rest-actions{display:flex;gap:8px;width:100%}
+.rest-actions button{
+  flex:1;padding:8px 0;border-radius:14px;border:0;font-size:12px;font-weight:700;cursor:pointer;
+}
+.rest-actions .rs-start{background:var(--yellow-deep);color:#1a1400}
+.rest-actions .rs-reset{background:rgba(255,255,255,.08);color:#fff}
+.rest-panel.ringing .rest-clock{color:#ff5757;animation:ringPulse .5s ease-in-out infinite}
+@keyframes ringPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* ---------- SHARE BUTTONS ---------- */
+.pl-share{
+  align-self:flex-start;background:transparent;border:1px solid rgba(37,211,102,.5);color:#25D366;
+  border-radius:20px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;transition:transform .15s,background .2s;margin-top:2px;
+}
+.pl-share:hover{transform:translateY(-2px);background:rgba(37,211,102,.12)}
+.pl-actions{display:flex;gap:8px;flex-wrap:wrap}
+.track-share{
+  background:transparent;border:1px solid rgba(37,211,102,.5);color:#25D366;
+  border-radius:20px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;
+}
+.track-share:hover{background:rgba(37,211,102,.12)}
 </style>
 </head>
 <body>
@@ -417,12 +492,18 @@ footer{border-top:1px solid var(--line);padding:26px 0}
 
     <!-- playlist chooser: list of all playlists -->
     <div class="grid-playlists" id="playlistChooser">
-      <div class="pl-card"><div class="pl-head"><div class="pl-ic">🎵</div><div><div class="pl-name skel">लोड हो रहा है…</div></div></div></div>
+      <div class="pl-card">
+        <div class="dumbbell-loader">
+          <div class="db"><div class="plate small"></div><div class="bar"></div><div class="plate small"></div></div>
+          <span class="txt">लोड हो रहा है…</span>
+        </div>
+      </div>
     </div>
 
     <!-- track view: songs of the selected playlist -->
     <div id="trackView">
       <button class="yt-link" id="backToPlaylists" style="margin-bottom:18px">← सभी प्लेलिस्ट पर वापस</button>
+      <button class="track-share" id="trackShareBtn" type="button">📲 Gym Bros के साथ Share करें</button>
       <div class="grid-tracks" id="trackGrid"></div>
     </div>
   </div>
@@ -461,7 +542,11 @@ footer{border-top:1px solid var(--line);padding:26px 0}
     <div class="pb-fill" id="pbFill"></div>
     <input id="seek" type="range" min="0" max="100" value="0" style="opacity:0;position:relative;z-index:2">
   </div>
-  <div class="pb-art"><div class="eq"><span></span><span></span><span></span></div></div>
+  <div class="pb-art loading" id="pbArt">
+    <div class="db" id="pbArtDb">
+      <div class="plate small"></div><div class="bar"></div><div class="plate small"></div>
+    </div>
+  </div>
   <div class="pb-info">
     <div class="pb-title" id="songName">प्लेयर लोड हो रहा है…</div>
     <div class="pb-sub"><span id="current">00:00</span> / <span id="duration">00:00</span></div>
@@ -472,6 +557,21 @@ footer{border-top:1px solid var(--line);padding:26px 0}
     <button class="pb-btn" id="next" title="Next">⏭</button>
   </div>
   <div class="pb-vol">🔊<input id="vol" type="range" min="0" max="1" step=".01" value=".8"></div>
+  <div class="rest-wrap">
+    <button class="rest-btn" id="restBtn" type="button">⏱ Rest</button>
+    <div class="rest-panel" id="restPanel">
+      <h4>Rest Timer</h4>
+      <div class="rest-clock" id="restClock">01:00</div>
+      <div class="rest-presets">
+        <button class="rest-preset" data-sec="60" type="button">60s</button>
+        <button class="rest-preset active" data-sec="90" type="button">90s</button>
+      </div>
+      <div class="rest-actions">
+        <button class="rs-start" id="restStart" type="button">Start</button>
+        <button class="rs-reset" id="restReset" type="button">Reset</button>
+      </div>
+    </div>
+  </div>
   <button class="pb-toggle" id="sheetToggle">☰ सूची</button>
 </div>
 
@@ -482,7 +582,10 @@ footer{border-top:1px solid var(--line);padding:26px 0}
     <button class="sheet-close" id="sheetClose">✕</button>
   </div>
   <div class="sheet-list" id="sheetList">
-    <div class="s-track"><div class="t-num">1</div><div class="t-name skel">प्लेयर लोड हो रहा है, कृपया प्रतीक्षा करें…</div></div>
+    <div class="dumbbell-loader">
+      <div class="db"><div class="plate"></div><div class="bar"></div><div class="plate"></div></div>
+      <span class="txt">प्लेयर लोड हो रहा है…</span>
+    </div>
   </div>
 </div>
 
@@ -559,6 +662,11 @@ function onYouTubeIframeAPIReady(){
 }
 function onReady(){
   ready=true;
+  const art = $('pbArt');
+  if(art){
+    art.classList.remove('loading');
+    art.innerHTML = '<div class="eq"><span></span><span></span><span></span></div>';
+  }
   player.setVolume(80);
   try{ player.setShuffle(false); }catch(e){} // हमेशा क्रम से बजे, random nahi
   currentPL = DEFAULT_PL;
@@ -616,6 +724,17 @@ function escapeHtml(s){
   return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
 
+/* ---------- WHATSAPP SHARE ---------- */
+function sharePlaylist(pl){
+  const url = "https://youtube.com/playlist?list=" + pl.id;
+  const msg = "🏋️ " + pl.name + " — जिम के लिए धांसू भोजपुरी बीट्स! सुनो यहाँ: " + url + " (Bhojpuri Gym Beats पर सुनो 🎧)";
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}
+$('trackShareBtn') && ($('trackShareBtn').onclick = ()=>{
+  if(currentPL < 0) return;
+  sharePlaylist(PLAYLISTS[currentPL]);
+});
+
 /* ---------- प्लेलिस्ट की लिस्ट (चुनने के लिए) ---------- */
 function renderChooser(){
   const el = $('playlistChooser');
@@ -633,9 +752,13 @@ function renderChooser(){
         </div>
       </div>
       ${pl.radio?'<span class="pl-badge">यूट्यूब ऑटो-मिक्स</span>':''}
-      <button class="pl-play" type="button">▶ अभी बजाओ</button>
+      <div class="pl-actions">
+        <button class="pl-play" type="button">▶ अभी बजाओ</button>
+        <button class="pl-share" type="button">📲 Gym Bros को भेजो</button>
+      </div>
     `;
     card.querySelector('.pl-play').onclick = (e)=>{ e.stopPropagation(); openPlaylist(i, true); };
+    card.querySelector('.pl-share').onclick = (e)=>{ e.stopPropagation(); sharePlaylist(pl); };
     card.onclick = ()=> openPlaylist(i, false);
     el.appendChild(card);
   });
@@ -668,7 +791,7 @@ function openPlaylist(idx, autoplay){
   document.querySelectorAll('#playlistChooser .pl-card').forEach((c,i)=> c.classList.toggle('active', i===idx));
 
   $('trackView').style.display = 'block';
-  $('trackGrid').innerHTML = '<div class="t-card"><div class="t-num">1</div><div class="t-name skel">लोड हो रहा है…</div></div>';
+  $('trackGrid').innerHTML = '<div class="dumbbell-loader"><div class="db"><div class="plate"></div><div class="bar"></div><div class="plate"></div></div><span class="txt">लोड हो रहा है…</span></div>';
   $('trackView').scrollIntoView({behavior:'smooth', block:'start'});
 
   try{ player.setShuffle(false); }catch(e){} // shuffle हमेशा बंद
@@ -784,6 +907,100 @@ function closeSheet(){ $('sheetOverlay').classList.remove('open'); $('sheet').cl
 $('sheetToggle').onclick = openSheet;
 $('sheetClose').onclick = closeSheet;
 $('sheetOverlay').onclick = closeSheet;
+
+/* ---------- REST TIMER (60s / 90s) ---------- */
+(function(){
+  const btn = $('restBtn'), panel = $('restPanel'), clockEl = $('restClock');
+  const startBtn = $('restStart'), resetBtn = $('restReset');
+  const presets = Array.from(document.querySelectorAll('.rest-preset'));
+  let total = 90, remaining = 90, tickHandle = null, running = false;
+  let dingCtx = null;
+
+  function fmtClock(s){
+    s = Math.max(0, Math.round(s));
+    return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+  }
+  function render(){ clockEl.textContent = fmtClock(remaining); }
+
+  presets.forEach(p=>{
+    p.onclick = ()=>{
+      if(running) return;
+      presets.forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      total = Number(p.dataset.sec);
+      remaining = total;
+      render();
+    };
+  });
+
+  function playDing(){
+    try{
+      dingCtx = dingCtx || new (window.AudioContext || window.webkitAudioContext)();
+      for(let i=0;i<3;i++){
+        const o = dingCtx.createOscillator(), g = dingCtx.createGain();
+        o.type = 'sine'; o.frequency.value = 880;
+        o.connect(g); g.connect(dingCtx.destination);
+        const t = dingCtx.currentTime + i*0.35;
+        g.gain.setValueAtTime(0.001, t);
+        g.gain.exponentialRampToValueAtTime(0.35, t+0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, t+0.3);
+        o.start(t); o.stop(t+0.32);
+      }
+    }catch(e){}
+  }
+
+  function tick(){
+    remaining -= 1;
+    if(remaining <= 0){
+      remaining = 0; render();
+      stop(true);
+      return;
+    }
+    render();
+  }
+
+  function start(){
+    if(running) return;
+    running = true;
+    btn.classList.add('on');
+    startBtn.textContent = 'Pause';
+    tickHandle = setInterval(tick, 1000);
+  }
+  function pause(){
+    running = false;
+    btn.classList.remove('on');
+    startBtn.textContent = 'Start';
+    clearInterval(tickHandle);
+  }
+  function stop(finished){
+    pause();
+    if(finished){
+      panel.classList.add('ringing');
+      playDing();
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+      setTimeout(()=>panel.classList.remove('ringing'), 2500);
+    }
+  }
+
+  startBtn.onclick = ()=> running ? pause() : start();
+  resetBtn.onclick = ()=>{
+    pause();
+    remaining = total;
+    panel.classList.remove('ringing');
+    render();
+  };
+  btn.onclick = (e)=>{
+    e.stopPropagation();
+    panel.classList.toggle('open');
+  };
+  document.addEventListener('click', (e)=>{
+    if(panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn){
+      panel.classList.remove('open');
+    }
+  });
+
+  render();
+})();
 
 setInterval(()=>{
   if(!ready) return;
