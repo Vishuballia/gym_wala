@@ -725,9 +725,13 @@ function escapeHtml(s){
 }
 
 /* ---------- WHATSAPP SHARE ---------- */
+function siteUrl(){
+  // हमेशा हमारी अपनी साइट का लिंक शेयर होगा (YouTube का नहीं)
+  return window.location.origin + window.location.pathname;
+}
 function sharePlaylist(pl){
-  const url = "https://youtube.com/playlist?list=" + pl.id;
-  const msg = "🏋️ " + pl.name + " — जिम के लिए धांसू भोजपुरी बीट्स! सुनो यहाँ: " + url + " (Bhojpuri Gym Beats पर सुनो 🎧)";
+  const url = siteUrl();
+  const msg = "🏋️ " + pl.name + " — जिम के लिए धांसू भोजपुरी बीट्स सुनो यहाँ: " + url + " (Bhojpuri Gym Beats 🎧)";
   window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
 }
 $('trackShareBtn') && ($('trackShareBtn').onclick = ()=>{
