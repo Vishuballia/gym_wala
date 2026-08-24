@@ -444,10 +444,16 @@ const PLAYLISTS = [
   { id:"PL_drFNAprELhyMNtr-qDDGhJkTeSPzRvV",             name:"देसी बीट्स कलेक्शन",     radio:false },
   { id:"PLTb6agHpQdPaDrdBv7vZwZUcD2Tzblyu7",             name:"भोजपुरी वर्कआउट मिक्स",  radio:false },
 ];
-const DEFAULT_PL = 1; // शुरुआत में बैकग्राउंड में यही cue रहेगी (radio wali nahi)
+const DEFAULT_PL = pickRandomStartPlaylist(); // हर बार साइट खुलने पर अलग प्लेलिस्ट
+
+function pickRandomStartPlaylist(){
+  const nonRadio = PLAYLISTS.map((p,i)=>i).filter(i=>!PLAYLISTS[i].radio);
+  return nonRadio[Math.floor(Math.random()*nonRadio.length)];
+}
 
 let player, ready=false, tracks=[], index=0, pollTries=0;
 let currentPL = -1, pendingSelect = null, loadToken = 0;
+let isInitialLoad = true; // पहली बार लोड होने पर random गाने से शुरू करने के लिए
 const $=id=>document.getElementById(id);
 const titleCache = new Map();
 const countCache = {};
@@ -479,6 +485,13 @@ function pollForPlaylist(){
     countCache[PLAYLISTS[currentPL].id] = tracks.length;
     renderChooserCounts();
     renderTracks();
+    if(isInitialLoad){
+      isInitialLoad = false;
+      const randIdx = Math.floor(Math.random()*tracks.length);
+      index = randIdx;
+      try{ player.cuePlaylist({ list: PLAYLISTS[currentPL].id, listType:'playlist', index: randIdx }); }catch(e){}
+      renderTracks();
+    }
     update();
     fetchRealTitles();
     return;
@@ -545,6 +558,7 @@ function renderChooserCounts(){
 /* ---------- किसी एक प्लेलिस्ट को खोलना ---------- */
 function openPlaylist(idx, autoplay){
   if(!ready){ pendingSelect = {idx, autoplay}; return; }
+  isInitialLoad = false; // अब यूज़र खुद चुन रहा है, इसलिए हमेशा पहले गाने/चुने गए गाने से क्रम में
   currentPL = idx;
   index = 0;
   tracks = [];
